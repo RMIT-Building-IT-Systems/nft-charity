@@ -12,6 +12,12 @@
 /.next/
 /out/
 
+#hardhat
+artifacts
+cache
+node_modules
+deployments
+
 # production
 /build
 
