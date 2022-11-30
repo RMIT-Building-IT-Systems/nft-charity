@@ -7,7 +7,7 @@ contract Nft is ERC721 {
     string public tokenUri;
     uint256 private s_tokenCounter;
 
-    event DogMinted(uint256 indexed tokenId);
+    event NftMinted(uint256 indexed tokenId);
 
     constructor(string memory uri) ERC721("Nft", "NFT") {
         tokenUri = uri;
@@ -16,7 +16,7 @@ contract Nft is ERC721 {
 
     function mintNft() public {
         _safeMint(msg.sender, s_tokenCounter);
-        emit DogMinted(s_tokenCounter);
+        emit NftMinted(s_tokenCounter);
         s_tokenCounter = s_tokenCounter + 1;
     }
 
