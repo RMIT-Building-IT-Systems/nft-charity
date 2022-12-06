@@ -10,10 +10,15 @@ error AlreadyListed(address nftAddress, uint256 tokenId);
 error NotOwner();
 
 contract Campaign is KeeperCompatibleInterface {
-
     enum CampaignState {
         ACTIVE,
         PASSED
+    }
+
+    struct NftInfo {
+        address nftAddress;
+        uint256 tokenId;
+        uint256 price;
     }
 
     struct Listing {
@@ -28,12 +33,6 @@ contract Campaign is KeeperCompatibleInterface {
         uint256 price
     );
 
-    event ItemCanceled(
-        address indexed campaignAddress,
-        address indexed nftAddress,
-        uint256 indexed tokenId
-    );
-
     event ItemBought(
         address indexed buyer,
         address indexed nftAddress,
@@ -43,21 +42,17 @@ contract Campaign is KeeperCompatibleInterface {
 
     event CampaignEnd(
         address indexed campaignAddress,
-        address indexed organizer
+        address indexed organizer,
+        address indexed receiver
     );
 
     address private immutable i_organizer;
     address private immutable i_receiver;
-    uint256 private immutable i_timeLast;
+    uint256 private immutable i_hourLast;
     uint256 private immutable i_startingTime;
     string private s_campaignDescription;
     CampaignState private s_campaignState;
     mapping(address => mapping(uint256 => Listing)) private s_listings;
-
-    modifier onlyOrganizer() {
-        require(msg.sender == i_organizer, "Only admin can call this function");
-        _;
-    }
 
     modifier notListed(address nftAddress, uint256 tokenId) {
         Listing memory listing = s_listings[nftAddress][tokenId];
@@ -75,37 +70,33 @@ contract Campaign is KeeperCompatibleInterface {
         _;
     }
 
-    constructor(address organizer, string memory campaignDescription, address receiver, uint256 timeLast) {
+    constructor(
+        address organizer,
+        string memory campaignDescription,
+        address receiver,
+        uint256 hourLast,
+        NftInfo[] memory nftInfos
+    ) {
         i_organizer = organizer;
         i_receiver = receiver;
-        i_timeLast = timeLast;
+        i_hourLast = hourLast;
         s_campaignDescription = campaignDescription;
         i_startingTime = block.timestamp;
         s_campaignState = CampaignState.ACTIVE;
+
+        for (uint256 i = 0; i < nftInfos.length; i++) {
+            NftInfo memory nftInfo = nftInfos[i];
+            addItem(nftInfo.nftAddress, nftInfo.tokenId, nftInfo.price);
+        }
     }
 
     function addItem(
         address nftAddress,
         uint256 tokenId,
         uint256 price
-    ) external notListed(nftAddress, tokenId) onlyOrganizer {
-        require(price > 0, "Price must be greater than 0");
-        IERC721 nft = IERC721(nftAddress);
-        require(
-            nft.getApproved(tokenId) != address(this),
-            "Contract must be approved to transfer NFT"
-        );
+    ) internal notListed(nftAddress, tokenId) {
         s_listings[nftAddress][tokenId] = Listing(price, msg.sender);
         emit ItemListed(address(this), nftAddress, tokenId, price);
-    }
-
-    function deleteItem(address nftAddress, uint256 tokenId)
-        external
-        isListed(nftAddress, tokenId)
-        onlyOrganizer
-    {
-        delete (s_listings[nftAddress][tokenId]);
-        emit ItemCanceled(address(this), nftAddress, tokenId);
     }
 
     function buyItem(address nftAddress, uint256 tokenId)
@@ -132,7 +123,7 @@ contract Campaign is KeeperCompatibleInterface {
         )
     {
         bool isActive = s_campaignState == CampaignState.ACTIVE;
-        bool timePassed = block.timestamp - i_startingTime > i_timeLast;
+        bool timePassed = block.timestamp - i_startingTime > i_hourLast * 1 hours;
         bool hasBalance = address(this).balance > 0;
         upkeepNeeded = isActive && timePassed && hasBalance;
         return (upkeepNeeded, "0x0");
@@ -148,7 +139,7 @@ contract Campaign is KeeperCompatibleInterface {
         s_campaignState = CampaignState.PASSED;
         (bool success, ) = payable(i_receiver).call{value: address(this).balance}("");
         require(success, "Transfer failed");
-        // emit
+        emit CampaignEnd(address(this), i_organizer, i_receiver);
     }
 
     function getOrganizer() external view returns (address) {
@@ -159,8 +150,8 @@ contract Campaign is KeeperCompatibleInterface {
         return i_receiver;
     }
 
-    function getTimeLast() external view returns (uint256) {
-        return i_timeLast;
+    function getHourLast() external view returns (uint256) {
+        return i_hourLast;
     }
 
     function getStartingTime() external view returns (uint256) {

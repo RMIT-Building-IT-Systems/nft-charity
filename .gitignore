@@ -13,7 +13,6 @@
 /out/
 
 #hardhat
-artifacts
 cache
 node_modules
 deployments
