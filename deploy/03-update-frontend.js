@@ -15,32 +15,32 @@ module.exports = async () => {
 };
 
 async function updateAbi() {
-    const campaignFactory = await ethers.getContract("CampaignFactory");
+    const nftCharity = await ethers.getContract("NftCharity");
 
     fs.writeFileSync(
-        `${frontEndAbiLocation}CampaignFactory.json`,
-        campaignFactory.interface.format(ethers.utils.FormatTypes.json)
+        `${frontEndAbiLocation}NftCharity.json`,
+        nftCharity.interface.format(ethers.utils.FormatTypes.json)
     );
 
     const nft = await ethers.getContract("Nft");
     fs.writeFileSync(
-        `${frontEndAbiLocation}BasicNft.json`,
+        `${frontEndAbiLocation}Nft.json`,
         nft.interface.format(ethers.utils.FormatTypes.json)
     );
 }
 
 async function updateContractAddresses() {
     const chainId = network.config.chainId.toString()
-    const campaignFactory = await ethers.getContract("CampaignFactory");
+    const nftCharity = await ethers.getContract("NftCharity");
     const contractAddresses = JSON.parse(fs.readFileSync(frontEndContractsFile, "utf8"))
     if (chainId in contractAddresses) {
-        if (!contractAddresses[chainId]["CampaignFactory"].includes(campaignFactory.address)) {
-            contractAddresses[chainId]["CampaignFactory"].push(campaignFactory.address)
+        if (!contractAddresses[chainId]["NftCharity"].includes(nftCharity.address)) {
+            contractAddresses[chainId]["NftCharity"].push(nftCharity.address)
         }
     } else {
-        contractAddresses[chainId] = { CampaignFactory: [campaignFactory.address] }
+        contractAddresses[chainId] = { NftCharity: [nftCharity.address] }
     }
     fs.writeFileSync(frontEndContractsFile, JSON.stringify(contractAddresses))
 }
 
-module.exports.tags = ["all", "frontend"];
+// module.exports.tags = ["all", "frontend"];
