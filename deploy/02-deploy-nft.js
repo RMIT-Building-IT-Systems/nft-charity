@@ -1,7 +1,7 @@
 const { network } = require("hardhat");
 const { developmentChains, VERIFICATION_BLOCK_CONFIRMATIONS } = require("../helper-hardhat-config");
-const { verify } = require("../utils/verify");
-const { storeImages, storeTokenUriMetadata } = require("../utils/uploadToPinata");
+const { verify } = require("../utils/hardhat/verify");
+const { storeImages, storeTokenUriMetadata } = require("../utils/hardhat/uploadToPinata");
 
 const imagesLocation = "./images";
 const metadataTemplate = {
