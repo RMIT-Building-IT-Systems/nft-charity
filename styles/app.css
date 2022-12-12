@@ -1,0 +1,35 @@
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 9rem;
+    border-bottom: 1px solid #dddddd;
+    /* background-color: #F3F4F6; */
+}
+
+.add-header-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.app-header-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex: 2;
+}
+
+.app-header-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.app-footer {
+    
+    padding: 3rem 0;
+    text-align: center;
+}
