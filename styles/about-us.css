@@ -1,0 +1,16 @@
+.about-us {
+    padding: 5rem 9rem;
+    display: flex;
+}
+
+.about-us-details {
+    flex: 1;
+    padding: 2rem 3.5rem 0;
+    text-align: justify;
+}
+
+.about-us-img {
+    flex: 1;
+    width: 50%;
+    border-radius: 15px;
+}
