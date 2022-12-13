@@ -51,12 +51,11 @@
 }
 
 .homepage-pages-intro {
-    padding: 2rem 0;
+    padding: 2rem 0 0;
 }
 
 .homepage-pages-intro-item {
     display: flex;
-    /* background-color: "#f3f4f6"; */
 }
 
 .homepage-pages-intro-item-text {

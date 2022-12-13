@@ -1,11 +1,12 @@
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import AboutUs from "../../components/about-us";
 
 export default () => {
     return (
         <div>
             <Header />
-            <h1>ABOUT US</h1>
+            <AboutUs />
             <Footer />
         </div>
     );
