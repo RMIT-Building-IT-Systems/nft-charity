@@ -1,12 +1,12 @@
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import NftListing from "../../components/nft-listing";
+import AboutUs from "../../components/about-us";
 
 export default () => {
     return (
         <div>
             <Header />
-            <NftListing />
+            <AboutUs />
             <Footer />
         </div>
     );
