@@ -118,5 +118,5 @@ export const campaignsData = [
         title: "Genesis Collection",
         price: "0.748 ETH",
         duration: 23,
-    }
-]
+    },
+];
