@@ -23,6 +23,12 @@ contract NftCharity is ReentrancyGuard {
         uint256 approvalsCount;
     }
 
+    struct NftItem {
+        address nftAddress;
+        uint256 tokenId;
+        uint256 price;
+    }
+
     event ItemListed(address indexed nftAddress, uint256 indexed tokenId, uint256 price);
 
     event ItemCanceled(address indexed nftAddress, uint256 indexed tokenId);
@@ -44,6 +50,7 @@ contract NftCharity is ReentrancyGuard {
     uint256 private s_completeRequestsCount;
     uint256 private s_rejectedRequestsCount;
     uint256 private s_moneyAvailableForRequests;
+    mapping(address => NftItem[]) private s_nftOwners;
 
     modifier onlyAdmin() {
         require(msg.sender == i_admin, "Only admin can call this function");
@@ -109,6 +116,8 @@ contract NftCharity is ReentrancyGuard {
         s_donatorsCount++;
         s_moneyAvailableForRequests += price;
         IERC721(nftAddress).safeTransferFrom(i_admin, msg.sender, tokenId);
+        NftItem memory item = NftItem(nftAddress, tokenId, price);
+        s_nftOwners[msg.sender].push(item);
         emit ItemBought(msg.sender, nftAddress, tokenId, price);
     }
 
@@ -270,6 +279,10 @@ contract NftCharity is ReentrancyGuard {
             }
         }
         return rejectedRequests;
+    }
+
+    function getNftsByOwner(address owner) external view returns (NftItem[] memory) {
+        return s_nftOwners[owner];
     }
 
     function getRequestsCount() external view returns (uint256) {
