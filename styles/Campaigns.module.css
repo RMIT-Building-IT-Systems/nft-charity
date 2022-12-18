@@ -4,12 +4,14 @@
 }
 
 .campaigns_topComponent_banner{
-    background-image: linear-gradient(rgba(19, 19, 19, 0.7), rgba(0, 0, 0, 0.8)), url("../images/banner/banner-others.png");
+    background-image: linear-gradient(rgba(230, 216, 216, 0.3), rgba(0, 0, 0, 0.5)), url("../images/banner/banner-homepage.png");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    display: flex;
-    flex-direction: column;
+    /* display: flex; */
+    /* flex-direction: column; */
+    display: grid;
+    place-items: center;
     padding: 30px;
     width: 100%;
     /* margin: auto; */

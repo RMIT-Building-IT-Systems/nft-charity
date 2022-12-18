@@ -1,19 +1,17 @@
 import CampaignCard from "./campaigncard";
 import styles from "../../styles/Campaigns.module.css";
 import { campaignsData } from "./fakeData_campaign";
-import {Button} from 'antd'
 
-export default function NftListing() {
+export default function UserNftListing() {
     return (
         <div className={styles.campaigns_wrapper}>
             <div className={styles.campaigns_topComponent}>
                 <div className={styles.campaigns_topComponent_banner}>
-                    <h1 className={styles.campaigns_topComponent_title}>NFTs List</h1>
+                    <h1 className={styles.campaigns_topComponent_title}>Personal NFTs List</h1>
                     <p className={styles.campaigns_topComponent_desc}>
-                        A place to purchase NFTs you like. All the money collected will be used for
+                        A place to view NFTs you have bought. All the money collected will be used for
                         donations.
                     </p>
-                    <Button style={{height: "45px"}}  type="primary" danger>Add NFTs</Button>
                 </div>
             </div>
             <div className={styles.campaigns_midComponent}>

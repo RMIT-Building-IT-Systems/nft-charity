@@ -24,6 +24,7 @@ const Header = () => {
                 </Link>
                 <HeaderNavItem title="About Us" urlPath={"/about-us"} />
                 <HeaderNavItem title="NFT List" urlPath={"/nft-listing"} />
+                <HeaderNavItem title="Personal NFT List" urlPath={"/user-nft-listing"} />
                 <HeaderNavItem title="Donation Requests" urlPath={"/donation-requests"} />
             </div>
             <div className="app-header-right">

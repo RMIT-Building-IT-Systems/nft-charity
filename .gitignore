@@ -16,6 +16,7 @@
 cache
 node_modules
 deployments
+artifacts
 
 # production
 /build
