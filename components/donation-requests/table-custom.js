@@ -3,6 +3,7 @@ import {Button, Space, Typography, Breadcrumb, Table} from 'antd';
 import {active_columns, active_data} from "./data-activeRequests";
 import {complete_columns, complete_data} from "./data-completeRequests";
 import {reject_columns, reject_data} from "./data-rejectRequests";
+import {expire_columns, expire_data} from "./data-expireRequests";
 
 export default function TableCustom({table_type, isAdmin}){
     let columns = [], data = []
@@ -27,7 +28,11 @@ export default function TableCustom({table_type, isAdmin}){
         ];
         data = active_data;
     }
-    else if(table_type==='Complete'){
+    else if(table_type==='Expired'){
+        columns = [...expire_columns];
+        data = [...expire_data];
+    }
+    else if(table_type==='Completed'){
         columns = [...complete_columns];
         data = [...complete_data];
     }
