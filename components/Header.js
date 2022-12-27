@@ -30,14 +30,21 @@ const Header = () => {
         }
     };
 
+    const handleLogout = async () => {
+        window.localStorage.removeItem("connected");
+        await deactivateWeb3();
+    };
+
+    const logOut = async () => {};
+
     const contentUserAvatar = (
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
             <Button href="/user-nft-listing">
                 <h3 style={{ color: route === "/user-nft-listing" ? "#1777FE" : "#3c4048" }}>
                     User NFT
                 </h3>
             </Button>
-            <Button href="/user-nft-listing">
+            <Button onClick={handleLogout} danger={true} href="/user-nft-listing">
                 <h3 style={{ color: route === "/user-nft-listing" ? "#1777FE" : "#3c4048" }}>
                     Log out
                 </h3>
@@ -57,8 +64,7 @@ const Header = () => {
     useEffect(() => {
         Moralis.onAccountChanged((account) => {
             if (account === null) {
-                window.localStorage.removeItem("connected");
-                deactivateWeb3();
+                handleLogout();
             }
         });
     });
@@ -89,18 +95,24 @@ const Header = () => {
                 >
                     <h3>{account ? shortenAddress(account) : "Connect"}</h3>
                 </Button>
-                <Popover
-                    content={contentUserAvatar}
-                    trigger="click"
-                    open={open}
-                    onOpenChange={handleOpenChange}
-                >
-                    <div
-                        style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+                {isWeb3Enabled && (
+                    <Popover
+                        content={contentUserAvatar}
+                        trigger="click"
+                        open={open}
+                        onOpenChange={handleOpenChange}
                     >
-                        <FaRegUserCircle size={30} color="#3c4048" />
-                    </div>
-                </Popover>
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                        >
+                            <FaRegUserCircle size={30} color="#3c4048" />
+                        </div>
+                    </Popover>
+                )}
             </div>
         </div>
     );
