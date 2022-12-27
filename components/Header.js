@@ -1,12 +1,31 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Button } from "antd";
+import { Button, Popover } from "antd";
 import { FaHome, FaRegUserCircle } from "react-icons/fa";
 import { BiDonateHeart } from "react-icons/bi";
+import React, { useState } from 'react';
 
 const Header = () => {
     const router = useRouter();
     const route = router.pathname;
+    const [open, setOpen] = useState(false);
+    const hide = () => {
+        setOpen(false);
+    };
+    const handleOpenChange = (newOpen) => {
+        setOpen(newOpen);
+    };
+
+    const contentUserAvatar = (
+        <div>
+          <Button href="/user-nft-listing">
+            <h3 style={{ color: route === "/user-nft-listing" ? "#1777FE" : "#3c4048" }}>User NFT</h3>
+        </Button>
+          <Button href="/user-nft-listing">
+            <h3 style={{ color: route === "/user-nft-listing" ? "#1777FE" : "#3c4048" }}>Log out</h3>
+        </Button>
+        </div>
+      );
 
     return (
         <div className="app-header">
@@ -30,9 +49,16 @@ const Header = () => {
                 <Button style={{ width: "175px", height: "37.5px" }}>
                     <h3>Connect</h3>
                 </Button>
-                <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <FaRegUserCircle size={30} color="#3c4048" />
-                </div>
+                <Popover
+                    content={contentUserAvatar}
+                    trigger="click"
+                    open={open}
+                    onOpenChange={handleOpenChange}
+                >
+                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <FaRegUserCircle size={30} color="#3c4048" />
+                    </div>
+                </Popover>
             </div>
         </div>
     );

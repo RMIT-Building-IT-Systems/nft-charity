@@ -1,0 +1,35 @@
+.campaigns_wrapper{
+    display: flex;
+    flex-direction: column;
+}
+
+.campaigns_topComponent_banner{
+    background-image: linear-gradient(rgba(230, 216, 216, 0.3), rgba(0, 0, 0, 0.5)), url("../images/banner/banner-homepage.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    /* display: flex; */
+    /* flex-direction: column; */
+    display: grid;
+    place-items: center;
+    padding: 30px;
+    width: 100%;
+    /* margin: auto; */
+    /* position: relative; */
+}
+
+.campaigns_midComponent{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 0 1rem;
+}
+
+.campaignCard{
+    padding: 20px 10px;
+}
+
+.campaigns_topComponent_title, .campaigns_topComponent_desc{
+    color: aliceblue;
+    margin: auto;
+    margin-bottom: 0.5rem;
+}

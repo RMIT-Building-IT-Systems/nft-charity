@@ -1,11 +1,12 @@
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import DonationRequests from "../../components/donation-requests"
 
 export default () => {
     return (
         <div>
             <Header />
-            <h1>Donation Requests</h1>
+            <DonationRequests />
             <Footer />
         </div>
     );
