@@ -20,7 +20,8 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.7.1",
     "react-moralis": "^1.4.2",
-    "react-sticky": "^6.0.3"
+    "react-sticky": "^6.0.3",
+    "web3uikit": "^1.0.4"
   },
   "devDependencies": {
     "@chainlink/contracts": "^0.5.1",

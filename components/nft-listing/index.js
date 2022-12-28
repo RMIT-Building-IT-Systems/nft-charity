@@ -1,9 +1,12 @@
 import CampaignCard from "./campaigncard";
 import styles from "../../styles/Campaigns.module.css";
+import { Button } from "antd";
+
+import useAdmin from "../../hooks/useAdmin";
 import { campaignsData } from "./fakeData_campaign";
-import {Button} from 'antd'
 
 export default function NftListing() {
+    const { isAdmin } = useAdmin();
     return (
         <div className={styles.campaigns_wrapper}>
             <div className={styles.campaigns_topComponent}>
@@ -13,7 +16,11 @@ export default function NftListing() {
                         A place to purchase NFTs you like. All the money collected will be used for
                         donations.
                     </p>
-                    <Button style={{height: "45px"}}  type="primary" danger>Add NFTs</Button>
+                    {isAdmin && (
+                        <Button style={{ height: "45px" }} type="primary" danger>
+                            Add NFTs
+                        </Button>
+                    )}
                 </div>
             </div>
             <div className={styles.campaigns_midComponent}>
