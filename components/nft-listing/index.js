@@ -1,12 +1,16 @@
 import CampaignCard from "./campaigncard";
 import styles from "../../styles/Campaigns.module.css";
 import { Button } from "antd";
+import { useQuery } from "@apollo/client";
 
 import useAdmin from "../../hooks/useAdmin";
-import { campaignsData } from "./fakeData_campaign";
+import GET_LISTED_NFTS from "../../constants/subgraph/getListedNft";
 
 export default function NftListing() {
     const { isAdmin } = useAdmin();
+    const { loading, error, data: listedNfts } = useQuery(GET_LISTED_NFTS);
+    const activeItems = listedNfts?.activeItems;
+
     return (
         <div className={styles.campaigns_wrapper}>
             <div className={styles.campaigns_topComponent}>
@@ -17,25 +21,27 @@ export default function NftListing() {
                         donations.
                     </p>
                     {isAdmin && (
-                        <Button style={{ height: "45px" }} type="primary" danger>
+                        <Button style={{ height: "45px" }} type="primary">
                             Add NFTs
                         </Button>
                     )}
                 </div>
             </div>
             <div className={styles.campaigns_midComponent}>
-                {campaignsData.map((d) => {
-                    return (
-                        <div className={styles.campaignCard}>
-                            <CampaignCard
-                                title={d.title}
-                                cover={d.cover}
-                                price={d.price}
-                                duration={d.duration}
-                            />
-                        </div>
-                    );
-                })}
+                {activeItems &&
+                    activeItems.map((item) => {
+                        return (
+                            <div className={styles.campaignCard}>
+                                <CampaignCard
+                                    title={item.title}
+                                    price={item.price}
+                                    nftAddress={item.nftAddress}
+                                    tokenId={item.tokenId}
+                                    key={`${item.nftAddress}${item.tokenId}`}
+                                />
+                            </div>
+                        );
+                    })}
             </div>
             <div className={styles.campaigns_botComponent}></div>
         </div>

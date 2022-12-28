@@ -4,10 +4,13 @@ import {
     nftCharityContractAddr,
     nftCharityContractAbi,
 } from "../constants/ethereum/nftCharityContract";
+import useSCCharityFunction from "./useSCCharityFunction";
 
 export default () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const { account } = useMoralis();
+
+    const { runSCCharityFunction } = useSCCharityFunction("getAdmin", {});
 
     const { runContractFunction: getAdminAddr } = useWeb3Contract({
         abi: nftCharityContractAbi,
@@ -19,11 +22,11 @@ export default () => {
     useEffect(() => {
         const getAdmin = async () => {
             if (!account) return;
-            const adminAddr = await getAdminAddr();
+            const adminAddr = await runSCCharityFunction("getAdmin", {});
             setIsAdmin(account.toLowerCase() === adminAddr.toLowerCase());
         };
         getAdmin();
-    }, [account, getAdminAddr]);
+    }, [account, getAdminAddr, runSCCharityFunction]);
 
     return {
         isAdmin,
