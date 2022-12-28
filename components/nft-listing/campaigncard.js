@@ -1,29 +1,54 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { Card, Button } from "antd";
-
+import * as ethers from "ethers";
+import { useWeb3Contract } from "react-moralis";
 const { Meta } = Card;
 
-export default function CampaignCard({ title, cover, duration, price }) {
+import useAdmin from "../../hooks/useAdmin";
+import { nftContractAbi } from "../../constants/ethereum/nftContract";
+
+export default function CampaignCard({ price, nftAddress, tokenId }) {
+    const [imageUri, setImageUri] = useState("");
+    const { isAdmin } = useAdmin();
+    const { runContractFunction: getTokenURI } = useWeb3Contract({
+        abi: nftContractAbi,
+        contractAddress: nftAddress,
+        functionName: "tokenURI",
+        params: {
+            tokenId: parseInt(tokenId),
+        },
+    });
+
+    const updateUI = async () => {
+        const tokenURI = await getTokenURI();
+        console.log("tokenURI :", tokenURI);
+        if (tokenURI) {
+            const requestURL = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
+            const tokenURIResponse = await (await fetch(requestURL)).json();
+            const imageURI = tokenURIResponse.image;
+            const imageURIURL = imageURI.replace("ipfs://", "https://ipfs.io/ipfs/");
+            setImageUri(imageURIURL);
+        }
+    };
+
+    useEffect(() => {
+        updateUI();
+    }, [updateUI]);
+
+    console.log(imageUri);
+
     return (
         <Card
-            // style={{ width: "20%" }}
-            cover={<img alt="example" src={cover} />}
+            cover={<img alt="example" src={imageUri} />}
             hoverable
-            // actions={[
-            //     <SettingOutlined key="setting" />,
-            //     <EditOutlined key="edit" />,
-            //     <EllipsisOutlined key="ellipsis" />,
-            // ]}
         >
             <Meta
-                // avatar={<Avatar src={avatar} />}
-                title={title}
-                description={price}
+                description={`Price: ${ethers.utils.formatEther(price)} ETH`}
             />
             <br />
             <div className="addButton">
-                <Button style={{height: "40px"}} type="primary" block>
-                    Purchase
+                <Button danger={isAdmin} style={{ height: "40px" }} type="primary" block>
+                    {isAdmin ? "Cancel" : "Purchase"}
                 </Button>
             </div>
         </Card>

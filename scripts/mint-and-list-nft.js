@@ -4,7 +4,7 @@ const { moveBlocks } = require("../utils/hardhat/move-blocks");
 const PRICE = ethers.utils.parseEther("0.1");
 
 async function mintAndList() {
-
+    
     const nftCharity = await ethers.getContract("NftCharity");
     const nft = await ethers.getContract("Nft");
 
