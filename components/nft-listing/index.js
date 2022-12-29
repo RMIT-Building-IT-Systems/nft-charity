@@ -1,9 +1,25 @@
 import CampaignCard from "./campaigncard";
 import styles from "../../styles/Campaigns.module.css";
 import { campaignsData } from "./fakeData_campaign";
-import {Button} from 'antd'
+import React, { useState } from 'react';
+import {Button, Modal, Input} from 'antd'
 
 export default function NftListing() {
+    const [loadingNFT, setLoadingNFT] = useState(false);
+    const [openNFT, setOpenNFT] = useState(false);
+    const showModalNFT = () => {
+        setOpenNFT(true);
+    };
+    const handleOkNFT = () => {
+        setLoadingNFT(true);
+        setTimeout(() => {
+            setLoadingNFT(false);
+            setOpenNFT(false);
+        }, 3000);
+    };
+    const handleCancelNFT = () => {
+        setOpenNFT(false);
+    };
     return (
         <div className={styles.campaigns_wrapper}>
             <div className={styles.campaigns_topComponent}>
@@ -13,7 +29,26 @@ export default function NftListing() {
                         A place to purchase NFTs you like. All the money collected will be used for
                         donations.
                     </p>
-                    <Button style={{height: "45px"}}  type="primary" danger>Add NFTs</Button>
+                    <Button onClick={showModalNFT} style={{height: "45px"}}  type="primary" danger>Add NFTs</Button>
+                    <Modal
+                        open={openNFT}
+                        title="Add NFT Listing"
+                        onOk={handleOkNFT}
+                        onCancel={handleCancelNFT}
+                        footer={[
+                        <Button key="back" onClick={handleCancelNFT}>
+                            Return
+                        </Button>,
+                        <Button key="submit" type="primary" loading={loadingNFT} onClick={handleOkNFT}>
+                            Submit
+                        </Button>
+                        ]}
+                    >   
+                        <p>NFT address</p>
+                        <Input />
+                        <p>Token ID</p>
+                        <Input />
+                    </Modal>
                 </div>
             </div>
             <div className={styles.campaigns_midComponent}>
