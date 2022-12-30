@@ -21,7 +21,6 @@ export default function CampaignCard({ price, nftAddress, tokenId }) {
 
     const updateUI = async () => {
         const tokenURI = await getTokenURI();
-        console.log("tokenURI :", tokenURI);
         if (tokenURI) {
             const requestURL = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
             const tokenURIResponse = await (await fetch(requestURL)).json();
@@ -35,16 +34,14 @@ export default function CampaignCard({ price, nftAddress, tokenId }) {
         updateUI();
     }, [updateUI]);
 
-    console.log(imageUri);
-
     return (
         <Card
-            cover={<img alt="example" src={imageUri} />}
+            cover={
+                imageUri ? <img style={{ height: "250px" }} alt="example" src={imageUri} /> : null
+            }
             hoverable
         >
-            <Meta
-                description={`Price: ${ethers.utils.formatEther(price)} ETH`}
-            />
+            <Meta description={`Price: ${ethers.utils.formatEther(price)} ETH`} />
             <br />
             <div className="addButton">
                 <Button danger={isAdmin} style={{ height: "40px" }} type="primary" block>
