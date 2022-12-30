@@ -7,6 +7,7 @@ import { BiDonateHeart } from "react-icons/bi";
 import { useMoralis } from "react-moralis";
 
 import shortenAddress from "../utils/frontend/shortenAddress";
+import useAdmin from "../hooks/useAdmin";
 
 const Header = () => {
     const router = useRouter();
@@ -15,9 +16,8 @@ const Header = () => {
         useMoralis();
     const [open, setOpen] = useState(false);
 
-    const hide = () => {
-        setOpen(false);
-    };
+    const { isAdmin } = useAdmin();
+
     const handleOpenChange = (newOpen) => {
         setOpen(newOpen);
     };
@@ -35,15 +35,15 @@ const Header = () => {
         await deactivateWeb3();
     };
 
-    const logOut = async () => {};
-
     const contentUserAvatar = (
         <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-            <Button href="/user-nft-listing">
-                <h3 style={{ color: route === "/user-nft-listing" ? "#1777FE" : "#3c4048" }}>
-                    User NFT
-                </h3>
-            </Button>
+            {!isAdmin && (
+                <Button href="/user-nft-listing">
+                    <h3 style={{ color: route === "/user-nft-listing" ? "#1777FE" : "#3c4048" }}>
+                        Your NFTs
+                    </h3>
+                </Button>
+            )}
             <Button onClick={handleLogout} danger={true} href="/user-nft-listing">
                 <h3 style={{ color: route === "/user-nft-listing" ? "#1777FE" : "#3c4048" }}>
                     Log out
