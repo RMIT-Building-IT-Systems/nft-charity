@@ -12,7 +12,7 @@ export default function TabbarCustom({ isAdmin }) {
     const tab_arra_title = ["Active", "Expired", "Completed", "Rejected"]
     const items = tab_arra_title.map((title, id) => {
         const color = title === "Active" ? "blue" : title ==="Expired" ? "black" : title === "Completed" ? "green" : "red"
-        const icon = title === "Active" ? <SyncOutlined spin /> : title ==="Expired" ? <WarningOutlined /> : title === "Complete" ? <CheckCircleOutlined /> : <CloseCircleOutlined />
+        const icon = title === "Active" ? <SyncOutlined spin /> : title ==="Expired" ? <WarningOutlined /> : title === "Completed" ? <CheckCircleOutlined /> : <CloseCircleOutlined />
         return {
             label: <Button style={{fontSize: '1.1em', color:`${color}`}} icon={icon} type="text">
                 {title}
