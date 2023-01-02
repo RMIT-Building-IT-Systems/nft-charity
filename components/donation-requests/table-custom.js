@@ -9,6 +9,14 @@ import useTable from "./useTable";
 
 const columnsTemplate = [
     {
+        title: "ID",
+        dataIndex: "id",
+        key: "id",
+        render: (id) => {
+            return ethers.utils.formatEther(id) * 10 ** 18;
+        },
+    },
+    {
         title: "Description",
         dataIndex: "description",
         key: "description",
@@ -41,8 +49,11 @@ export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
         approveRequest,
         rejectRequest,
         completeRequest,
+        getIsApproveRequest,
         notificationContextHolder,
     } = useTable();
+
+    // console.log(activeRequests);
 
     let columns = [];
     let data = [];
@@ -57,16 +68,24 @@ export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
         },
         {
             title: "Time left",
-            key: "",
-            dataIndex: "",
-            render: (_) => null,
+            key: "timeLeft",
+            dataIndex: "dayLast",
+            render: (dayLast, record) => {
+                // console.log("record :", record.timeCreated);
+                // console.log("dayLast: ", dayLast);
+                return null;
+            },
         },
         {
             title: "",
             key: "",
-            dataIndex: "",
-            render: () => {
-                return !isAdmin ? <Button type="primary">Approve</Button> : null;
+            dataIndex: "id",
+            render: (id) => {
+                return !isAdmin ? (
+                    <Button disabled={getIsApproveRequest(id)} type="primary">
+                        Approve
+                    </Button>
+                ) : null;
             },
         },
     ];
@@ -85,7 +104,6 @@ export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
             key: "",
             dataIndex: "approvalsCount",
             render: (count, record) => {
-                const id = parseInt(ethers.utils.formatEther(record.id));
                 return isAdmin && donatorsCount ? (
                     count >= donatorsCount / 2 ? (
                         <Button type="primary">Complete</Button>
@@ -107,11 +125,7 @@ export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
         data = expiredRequests;
     } else {
         columns = [...columnsTemplate];
-        if (table_type === "Completed") {
-            data = completedRequests;
-        } else {
-            data = rejectedRequests;
-        }
+        data = table_type === "Completed" ? completedRequests : rejectedRequests;
     }
 
     return (

@@ -1,5 +1,9 @@
-import { useState, useEffect } from "react";
-import useSCCharityFunction from "../../hooks/useSCCharityFunction";
+import { useState, useEffect, useCallback } from "react";
+import { useWeb3Contract, useMoralis } from "react-moralis";
+import {
+    nftCharityContractAddr,
+    nftCharityContractAbi,
+} from "../../constants/ethereum/nftCharityContract";
 
 export default () => {
     const [balance, setBalance] = useState();
@@ -9,44 +13,86 @@ export default () => {
     const [moneyAvailable, setMoneyAvailable] = useState();
     const [isLoadingMoneyAvailable, setIsLoadingMoneyAvailable] = useState(true);
 
-    const { runSCCharityFunction: getBalanceSC } = useSCCharityFunction("getCurrentBalance", {});
+    const { isWeb3Enabled } = useMoralis();
+    const { runContractFunction } = useWeb3Contract();
 
-    const { runSCCharityFunction: getDonatorsCountSC } = useSCCharityFunction(
-        "getDonatorsCount",
-        {}
-    );
+    const getBalance = useCallback(async () => {
+        setIsLoadingBalance(true);
+        const getBalanceOptions = {
+            abi: nftCharityContractAbi,
+            contractAddress: nftCharityContractAddr,
+            functionName: "getCurrentBalance",
+            params: {},
+        };
+        await runContractFunction({
+            params: getBalanceOptions,
+            onSuccess: (balance) => {
+                setBalance(balance / 10 ** 18);
+            },
+            onError: (error) => {
+                console.log("error :", error);
+            },
+        });
+        setIsLoadingBalance(false);
+    }, [runContractFunction]);
 
-    const { runSCCharityFunction: getMoneyAvailableSC } = useSCCharityFunction(
-        "getMoneyAvailableForRequests",
-        {}
-    );
+    const getDonatorsCount = useCallback(async () => {
+        setIsLoadingDonatorsCount(true);
+        const getDonatorsCountOptions = {
+            abi: nftCharityContractAbi,
+            contractAddress: nftCharityContractAddr,
+            functionName: "getDonatorsCount",
+            params: {},
+        };
+        await runContractFunction({
+            params: getDonatorsCountOptions,
+            onSuccess: (donatorsCount) => {
+                setDonatorsCount(donatorsCount);
+            },
+            onError: (error) => {
+                console.log("error :", error);
+            },
+        });
+        setIsLoadingDonatorsCount(false);
+    }, [runContractFunction]);
+
+    const getMoneyAvailable = useCallback(async () => {
+        setIsLoadingMoneyAvailable(true);
+        const getMoneyAvailableOptions = {
+            abi: nftCharityContractAbi,
+            contractAddress: nftCharityContractAddr,
+            functionName: "getMoneyAvailableForRequests",
+            params: {},
+        };
+        await runContractFunction({
+            params: getMoneyAvailableOptions,
+            onSuccess: (moneyAvailable) => {
+                setMoneyAvailable(moneyAvailable / 10 ** 18);
+            },
+            onFailure: (error) => {
+                console.log("error :", error);
+            },
+        });
+        setIsLoadingMoneyAvailable(false);
+    }, [runContractFunction]);
 
     useEffect(() => {
-        const getBalance = async () => {
-            const balance = await getBalanceSC();
-            setBalance(balance / 10 ** 18);
-            setIsLoadingBalance(false);
-        };
-        getBalance();
-    }, [getBalanceSC]);
+        if (isWeb3Enabled) {
+            getBalance();
+        }
+    }, [isWeb3Enabled, getBalance]);
 
     useEffect(() => {
-        const getMoneyAvailable = async () => {
-            const moneyAvailable = await getMoneyAvailableSC();
-            setMoneyAvailable(moneyAvailable / 10 ** 18);
-            setIsLoadingMoneyAvailable(false);
-        };
-        getMoneyAvailable();
-    }, [getMoneyAvailableSC]);
+        if (isWeb3Enabled) {
+            getMoneyAvailable();
+        }
+    }, [isWeb3Enabled, getMoneyAvailable]);
 
     useEffect(() => {
-        const getDonatorsCount = async () => {
-            const donatorsCount = await getDonatorsCountSC();
-            setDonatorsCount(donatorsCount);
-            setIsLoadingDonatorsCount(false);
-        };
-        getDonatorsCount();
-    }, [getDonatorsCountSC]);
+        if (isWeb3Enabled) {
+            getDonatorsCount();
+        }
+    }, [isWeb3Enabled, getDonatorsCount]);
 
     return {
         balance,

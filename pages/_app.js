@@ -3,6 +3,7 @@ import "../styles/app.css";
 import "../styles/home-page.css";
 import "../styles/about-us.css";
 import { MoralisProvider } from "react-moralis";
+import { AdminContextProvider } from "../hooks/AdminContextProvider";
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 
 const client = new ApolloClient({
@@ -14,7 +15,9 @@ function MyApp({ Component, pageProps }) {
     return (
         <MoralisProvider initializeOnMount={false}>
             <ApolloProvider client={client}>
-                <Component {...pageProps} />
+                <AdminContextProvider>
+                    <Component {...pageProps} />
+                </AdminContextProvider>
             </ApolloProvider>
         </MoralisProvider>
     );

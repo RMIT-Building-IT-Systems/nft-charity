@@ -1,10 +1,10 @@
 import styles from "../../styles/donation-requests.module.css";
 import TabbarCustom from "./tabbar-custom";
 import * as ethers from "ethers";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Button, Modal, Input } from "antd";
 
-import useAdmin from "../../hooks/useAdmin";
+import { AdminContext } from "../../hooks/AdminContextProvider";
 import useCharityData from "./useCharityData";
 import useNotification from "../../hooks/useNotification";
 import { useWeb3Contract } from "react-moralis";
@@ -22,7 +22,7 @@ export default function DonationRequests() {
     const [receiverInput, setReceiverInput] = useState("");
     const [dayLastInput, setDayLastInput] = useState("");
 
-    const { isAdmin } = useAdmin();
+    const { isAdmin } = useContext(AdminContext);
     const {
         balance,
         isLoadingBalance,
