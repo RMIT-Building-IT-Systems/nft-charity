@@ -74,6 +74,7 @@ export default function DonationRequests() {
     const handleCancelRq = () => {
         setOpenRq(false);
     };
+
     return (
         <>
             {notificationContextHolder}
@@ -107,7 +108,7 @@ export default function DonationRequests() {
                             onCancel={handleCancelRq}
                             footer={[
                                 <Button key="back" onClick={handleCancelRq}>
-                                    Return
+                                    Cancel
                                 </Button>,
                                 <Button
                                     key="submit"
@@ -170,7 +171,7 @@ export default function DonationRequests() {
                     />
                 </div>
                 <div className={styles.donationRequests_midComponent}>
-                    <TabbarCustom isAdmin={isAdmin} />
+                    <TabbarCustom isAdmin={isAdmin} donatorsCount={donatorsCount} />
                 </div>
             </div>
         </>

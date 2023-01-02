@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import useSCCharityFunction from "../../hooks/useSCCharityFunction";
 
+import { useWeb3Contract } from "react-moralis";
+import {
+    nftCharityContractAddr,
+    nftCharityContractAbi,
+} from "../../constants/ethereum/nftCharityContract";
+import useNotification from "../../hooks/useNotification";
+
 export default () => {
     const [activeRequests, setActiveRequests] = useState([]);
     const [expiredRequests, setExpiredRequests] = useState([]);
@@ -11,13 +18,16 @@ export default () => {
     const [isLoadingCompletedTable, setIsLoadingCompletedTable] = useState(true);
     const [isLoadingRejectedTable, setIsLoadingRejectedTable] = useState(true);
 
+    const { runContractFunction } = useWeb3Contract();
+    const { raiseSuccess, raiseFailure, notificationContextHolder } = useNotification();
+
     const { runSCCharityFunction: getActiveRequestsSC } = useSCCharityFunction(
         "getAvailableRequests",
         {}
     );
 
     const { runSCCharityFunction: getExpiredRequestsSC } = useSCCharityFunction(
-        "getExpiredRequestsSC",
+        "getExpiredRequests",
         {}
     );
 
@@ -31,6 +41,69 @@ export default () => {
         {}
     );
 
+    const approveRequest = async (index) => {
+        const approveRequestOptions = {
+            abi: nftCharityContractAbi,
+            contractAddress: nftCharityContractAddr,
+            functionName: "approveRequest",
+            params: {
+                index: index,
+            },
+        };
+        await runContractFunction({
+            params: approveRequestOptions,
+            onSuccess: () => {
+                raiseSuccess("Request approved successfully!");
+            },
+            onFailure: (error) => {
+                console.log(error);
+                raiseFailure("Error approving request!");
+            },
+        });
+    };
+
+    const rejectRequest = async (index) => {
+        const approveRequestOptions = {
+            abi: nftCharityContractAbi,
+            contractAddress: nftCharityContractAddr,
+            functionName: "rejectRequest",
+            params: {
+                index: index,
+            },
+        };
+        await runContractFunction({
+            params: approveRequestOptions,
+            onSuccess: () => {
+                raiseSuccess("Request rejected successfully!");
+            },
+            onFailure: (error) => {
+                console.log(error);
+                raiseFailure("Error rejecting request!");
+            },
+        });
+    };
+
+    const completeRequest = async (index) => {
+        const approveRequestOptions = {
+            abi: nftCharityContractAbi,
+            contractAddress: nftCharityContractAddr,
+            functionName: "completeRequest",
+            params: {
+                index: index,
+            },
+        };
+        await runContractFunction({
+            params: approveRequestOptions,
+            onSuccess: () => {
+                raiseSuccess("Request completed!");
+            },
+            onFailure: (error) => {
+                console.log(error);
+                raiseFailure("Error completing request!");
+            },
+        });
+    };
+
     useEffect(() => {
         const getActiveRequests = async () => {
             const requests = await getActiveRequestsSC();
@@ -38,7 +111,7 @@ export default () => {
             setIsLoadingActiveTable(false);
         };
         getActiveRequests();
-    }, [getActiveRequestsSC]);
+    }, []);
 
     useEffect(() => {
         const getExpiredRequests = async () => {
@@ -76,5 +149,9 @@ export default () => {
         isLoadingExpiredTable,
         isLoadingCompletedTable,
         isLoadingRejectedTable,
+        approveRequest,
+        rejectRequest,
+        completeRequest,
+        notificationContextHolder,
     };
 };

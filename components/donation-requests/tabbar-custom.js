@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import { Tabs, Button } from "antd";
 
-export default function TabbarCustom({ isAdmin }) {
+export default function TabbarCustom({ isAdmin, donatorsCount }) {
     const tab_arra_title = ["Active", "Expired", "Completed", "Rejected"];
     const items = tab_arra_title.map((title, id) => {
         const color =
@@ -36,7 +36,9 @@ export default function TabbarCustom({ isAdmin }) {
                 </Button>
             ),
             key: id,
-            children: <TableCustom table_type={title} isAdmin={isAdmin}  />,
+            children: (
+                <TableCustom table_type={title} isAdmin={isAdmin} donatorsCount={donatorsCount} />
+            ),
         };
     });
     return (
