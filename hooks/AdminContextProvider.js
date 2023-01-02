@@ -10,7 +10,7 @@ export const AdminContext = createContext();
 
 export const AdminContextProvider = ({ children }) => {
     const [isAdmin, setIsAdmin] = useState(false);
-    const { account } = useMoralis();
+    const { account, isWeb3Enabled } = useMoralis();
 
     const { runContractFunction } = useWeb3Contract();
 
@@ -25,12 +25,16 @@ export const AdminContextProvider = ({ children }) => {
         const adminAddr = await runContractFunction({
             params: getAdminOptions,
         });
-        setIsAdmin(account.toLowerCase() === adminAddr.toLowerCase());
+        setIsAdmin(
+            account && adminAddr ? account.toLowerCase() === adminAddr.toLowerCase() : false
+        );
     }, [runContractFunction, account]);
 
     useEffect(() => {
-        getIsAdmin();
-    }, [getIsAdmin]);
+        if (isWeb3Enabled) {
+            getIsAdmin();
+        }
+    }, [isWeb3Enabled, getIsAdmin]);
 
     return <AdminContext.Provider value={{ isAdmin }}>{children}</AdminContext.Provider>;
 };
