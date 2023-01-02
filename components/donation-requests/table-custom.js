@@ -1,11 +1,9 @@
 import React from "react";
 import * as ethers from "ethers";
 import { Button, Breadcrumb, Table } from "antd";
-import { complete_columns } from "./data-completeRequests";
-import { reject_columns } from "./data-rejectRequests";
-import { expire_columns } from "./data-expireRequests";
 
 import useTable from "./useTable";
+import getTimeLeft from "../../utils/frontend/getTimeLeft";
 
 const columnsTemplate = [
     {
@@ -49,21 +47,19 @@ export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
         approveRequest,
         rejectRequest,
         completeRequest,
-        getIsApproveRequest,
         notificationContextHolder,
     } = useTable();
 
-    // console.log(activeRequests);
-
     let columns = [];
     let data = [];
+    let loading = false;
     const activeColumns = [
         {
             title: "Approvals Count",
             key: "approvalsCount",
             dataIndex: "approvalsCount",
             render: (count) => {
-                return parseInt(ethers.utils.formatEther(count));
+                return parseInt(ethers.utils.formatEther(count) * 10 ** 18);
             },
         },
         {
@@ -71,9 +67,9 @@ export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
             key: "timeLeft",
             dataIndex: "dayLast",
             render: (dayLast, record) => {
-                // console.log("record :", record.timeCreated);
-                // console.log("dayLast: ", dayLast);
-                return null;
+                const timeCreated = record.timeCreated;
+                const hoursLeft = getTimeLeft(timeCreated, dayLast);
+                return <p>{hoursLeft} hrs</p>;
             },
         },
         {
@@ -82,7 +78,12 @@ export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
             dataIndex: "id",
             render: (id) => {
                 return !isAdmin ? (
-                    <Button disabled={getIsApproveRequest(id)} type="primary">
+                    <Button
+                        onClick={() => {
+                            approveRequest(id);
+                        }}
+                        type="primary"
+                    >
                         Approve
                     </Button>
                 ) : null;
@@ -96,7 +97,7 @@ export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
             key: "approvalsCount",
             dataIndex: "approvalsCount",
             render: (count) => {
-                return parseInt(ethers.utils.formatEther(count));
+                return parseInt(ethers.utils.formatEther(count) * 10 ** 18);
             },
         },
         {
@@ -104,11 +105,25 @@ export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
             key: "",
             dataIndex: "approvalsCount",
             render: (count, record) => {
+                const id = record.id;
                 return isAdmin && donatorsCount ? (
                     count >= donatorsCount / 2 ? (
-                        <Button type="primary">Complete</Button>
+                        <Button
+                            onClick={() => {
+                                completeRequest(id);
+                            }}
+                            type="primary"
+                        >
+                            Complete
+                        </Button>
                     ) : (
-                        <Button type="primary" danger>
+                        <Button
+                            onClick={() => {
+                                rejectRequest(id);
+                            }}
+                            type="primary"
+                            danger
+                        >
                             Reject
                         </Button>
                     )
@@ -120,20 +135,24 @@ export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
     if (table_type === "Active") {
         columns = [...columnsTemplate, ...activeColumns];
         data = activeRequests;
+        loading = isLoadingActiveTable;
     } else if (table_type === "Expired") {
         columns = [...columnsTemplate, ...expiredColumns];
         data = expiredRequests;
+        loading = isLoadingExpiredTable;
     } else {
         columns = [...columnsTemplate];
         data = table_type === "Completed" ? completedRequests : rejectedRequests;
+        loading = table_type === "Completed" ? isLoadingCompletedTable : isLoadingRejectedTable;
     }
 
     return (
         <>
+            {notificationContextHolder}
             <Breadcrumb>
                 <Breadcrumb.Item>{table_type.toUpperCase()}</Breadcrumb.Item>
             </Breadcrumb>
-            <Table columns={columns} dataSource={data} loading={isLoadingActiveTable} />
+            <Table columns={columns} dataSource={data} loading={loading} />
         </>
     );
 }

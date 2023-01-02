@@ -101,32 +101,9 @@ export default () => {
         setIsLoadingCompletedTable(false);
     }, [runContractFunction]);
 
-    const getIsApproveRequest = useCallback(
-        async (index) => {
-            const isApproveRequestOptions = {
-                abi: nftCharityContractAbi,
-                contractAddress: nftCharityContractAddr,
-                functionName: "getIsApproveRequest",
-                params: {
-                    index: index,
-                },
-            };
-            await runContractFunction({
-                params: isApproveRequestOptions,
-                onSuccess: (isApproveRequest) => {
-                    return isApproveRequest;
-                },
-                onError: (error) => {
-                    console.log("error :", error);
-                    return false;
-                },
-            });
-        },
-        [runContractFunction]
-    );
-
     const approveRequest = useCallback(
         async (index) => {
+            setIsLoadingActiveTable(true);
             const approveRequestOptions = {
                 abi: nftCharityContractAbi,
                 contractAddress: nftCharityContractAddr,
@@ -145,6 +122,7 @@ export default () => {
                     raiseFailure("Error approving request!");
                 },
             });
+            setIsLoadingActiveTable(false);
         },
         [runContractFunction, raiseSuccess, raiseFailure]
     );
@@ -233,7 +211,6 @@ export default () => {
         approveRequest,
         rejectRequest,
         completeRequest,
-        getIsApproveRequest,
         notificationContextHolder,
     };
 };
