@@ -1,52 +1,158 @@
 import React from "react";
-import {Button, Space, Typography, Breadcrumb, Table} from 'antd';
-import {active_columns, active_data} from "./data-activeRequests";
-import {complete_columns, complete_data} from "./data-completeRequests";
-import {reject_columns, reject_data} from "./data-rejectRequests";
-import {expire_columns, expire_data} from "./data-expireRequests";
+import * as ethers from "ethers";
+import { Button, Breadcrumb, Table } from "antd";
 
-export default function TableCustom({table_type, isAdmin}){
-    let columns = [], data = []
-    if(table_type==='Active'){
-        columns = [...active_columns,
-            {
-            title: 'Action',
-            key: 'action',
-            render: () => (
-                !isAdmin && (
-                <Space size="middle">
-                <Button type="primary" danger>Approve</Button>
-                <Button type="primary">Decline</Button>
-                </Space>)
-                || (
-                    <Space size="middle">
-                    <Button type="primary">Complete</Button>
-                    <Button type="primary" danger>Reject</Button>
-                    </Space>)
-            ),
+import useTable from "./useTable";
+import getTimeLeft from "../../utils/frontend/getTimeLeft";
+
+const columnsTemplate = [
+    {
+        title: "ID",
+        dataIndex: "id",
+        key: "id",
+        render: (id) => {
+            return ethers.utils.formatEther(id) * 10 ** 18;
+        },
+    },
+    {
+        title: "Description",
+        dataIndex: "description",
+        key: "description",
+    },
+    {
+        title: "Value",
+        dataIndex: "value",
+        key: "value",
+        render: (value) => {
+            return ethers.utils.formatEther(value);
+        },
+    },
+    {
+        title: "Recipient",
+        key: "recipient",
+        dataIndex: "recipient",
+    },
+];
+
+export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
+    const {
+        activeRequests,
+        expiredRequests,
+        completedRequests,
+        rejectedRequests,
+        isLoadingActiveTable,
+        isLoadingExpiredTable,
+        isLoadingCompletedTable,
+        isLoadingRejectedTable,
+        approveRequest,
+        rejectRequest,
+        completeRequest,
+        notificationContextHolder,
+    } = useTable();
+
+    let columns = [];
+    let data = [];
+    let loading = false;
+    const activeColumns = [
+        {
+            title: "Approvals Count",
+            key: "approvalsCount",
+            dataIndex: "approvalsCount",
+            render: (count) => {
+                return parseInt(ethers.utils.formatEther(count) * 10 ** 18);
             },
-        ];
-        data = active_data;
-    }
-    else if(table_type==='Expired'){
-        columns = [...expire_columns];
-        data = [...expire_data];
-    }
-    else if(table_type==='Completed'){
-        columns = [...complete_columns];
-        data = [...complete_data];
-    }
-    else{
-        columns = [...reject_columns];
-        data = [...reject_data];
+        },
+        {
+            title: "Time left",
+            key: "timeLeft",
+            dataIndex: "dayLast",
+            render: (dayLast, record) => {
+                const timeCreated = record.timeCreated;
+                const hoursLeft = getTimeLeft(timeCreated, dayLast);
+                return <p>{hoursLeft} hrs</p>;
+            },
+        },
+        {
+            title: "",
+            key: "",
+            dataIndex: "id",
+            render: (id) => {
+                return !isAdmin ? (
+                    <Button
+                        onClick={() => {
+                            approveRequest(id);
+                        }}
+                        type="primary"
+                    >
+                        Approve
+                    </Button>
+                ) : null;
+            },
+        },
+    ];
+
+    const expiredColumns = [
+        {
+            title: "Approvals Count",
+            key: "approvalsCount",
+            dataIndex: "approvalsCount",
+            render: (count) => {
+                return parseInt(ethers.utils.formatEther(count) * 10 ** 18);
+            },
+        },
+        {
+            title: "",
+            key: "",
+            dataIndex: "approvalsCount",
+            render: (count, record) => {
+                const id = record.id;
+                return isAdmin && donatorsCount ? (
+                    count >= donatorsCount / 2 ? (
+                        <Button
+                            onClick={() => {
+                                completeRequest(id);
+                            }}
+                            type="primary"
+                        >
+                            Complete
+                        </Button>
+                    ) : (
+                        <Button
+                            onClick={() => {
+                                rejectRequest(id);
+                            }}
+                            type="primary"
+                            danger
+                        >
+                            Reject
+                        </Button>
+                    )
+                ) : null;
+            },
+        },
+    ];
+
+    if (table_type === "Active") {
+        columns = [...columnsTemplate, ...activeColumns];
+        data = activeRequests;
+        loading = isLoadingActiveTable;
+    } else if (table_type === "Expired") {
+        columns = [...columnsTemplate, ...expiredColumns];
+        data = expiredRequests;
+        loading = isLoadingExpiredTable;
+    } else {
+        columns = [...columnsTemplate];
+        data = table_type === "Completed" ? completedRequests : rejectedRequests;
+        loading = table_type === "Completed" ? isLoadingCompletedTable : isLoadingRejectedTable;
     }
 
-    return(
+    return (
         <>
+            {notificationContextHolder}
             <Breadcrumb>
-    <Breadcrumb.Item>{table_type.toUpperCase()}</Breadcrumb.Item>
-  </Breadcrumb>
-            <Table columns={columns} dataSource={data} />
+                <Breadcrumb.Item>{table_type.toUpperCase()}</Breadcrumb.Item>
+            </Breadcrumb>
+            <Table columns={columns} dataSource={data} loading={loading} />
         </>
-    )
+    );
 }

@@ -143,17 +143,17 @@ contract NftCharity is ReentrancyGuard {
         s_moneyAvailableForRequests -= value;
     }
 
-    function approveRequest(uint256 requestId, uint256 index) public onlyDonator {
+    function approveRequest(uint256 index) public onlyDonator {
         Request storage request = requests[index];
 
         require(request.state == RequestState.ACTIVE, "Request is not active");
-        require(!s_approvals[requestId][msg.sender], "You have already approved this request");
+        require(!s_approvals[index][msg.sender], "You have already approved this request");
         require(
             block.timestamp < request.timeCreated + request.dayLast * 1 days,
             "Request is expired"
         );
 
-        s_approvals[requestId][msg.sender] = true;
+        s_approvals[index][msg.sender] = true;
         request.approvalsCount++;
     }
 
@@ -307,5 +307,9 @@ contract NftCharity is ReentrancyGuard {
 
     function getCurrentBalance() external view returns (uint256) {
         return address(this).balance;
+    }
+
+    function getIsApproveRequest(uint256 index) external view returns (bool) {
+        return s_approvals[index][msg.sender];
     }
 }
