@@ -67,8 +67,11 @@ export default function TableCustom({ table_type, isAdmin, donatorsCount }) {
             key: "timeLeft",
             dataIndex: "dayLast",
             render: (dayLast, record) => {
-                const timeCreated = record.timeCreated;
-                const hoursLeft = getTimeLeft(timeCreated, dayLast);
+                const timeCreated = parseInt(
+                    ethers.utils.formatEther(record.timeCreated) * 10 ** 18
+                );
+                const last = parseInt(ethers.utils.formatEther(dayLast) * 10 ** 18);
+                const hoursLeft = getTimeLeft(timeCreated, last);
                 return <p>{hoursLeft} hrs</p>;
             },
         },

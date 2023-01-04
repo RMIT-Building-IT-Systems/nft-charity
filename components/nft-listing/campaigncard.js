@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Card, Button } from "antd";
+import { useState, useEffect, useCallback } from "react";
+import { Card, Button, Spin } from "antd";
 import * as ethers from "ethers";
 const { Meta } = Card;
 
@@ -15,6 +15,7 @@ import useNotification from "../../hooks/useNotification";
 
 export default function CampaignCard({ price, nftAddress, tokenId }) {
     const [imageUri, setImageUri] = useState("");
+    const [isLoadingImg, setIsLoadingImg] = useState(true);
     const [isCancelling, setIsCancelling] = useState(false);
     const [isPurchasing, setIsPurchasing] = useState(false);
 
@@ -30,20 +31,22 @@ export default function CampaignCard({ price, nftAddress, tokenId }) {
         },
     });
 
-    const updateUI = async () => {
+    const updateUI = useCallback(async () => {
         const tokenURI = await getTokenURI();
         if (tokenURI) {
+            // setIsLoadingImg(true);
             const requestURL = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
             const tokenURIResponse = await (await fetch(requestURL)).json();
             const imageURI = tokenURIResponse.image;
             const imageURIURL = imageURI.replace("ipfs://", "https://ipfs.io/ipfs/");
             setImageUri(imageURIURL);
         }
-    };
+        // setIsLoadingImg(false);
+    }, [getTokenURI, setIsLoadingImg, setImageUri]);
 
     const { runContractFunction } = useWeb3Contract();
 
-    const cancelListing = async () => {
+    const cancelListing = useCallback(async () => {
         setIsCancelling(true);
         const cancelOptions = {
             abi: nftCharityContractAbi,
@@ -67,9 +70,9 @@ export default function CampaignCard({ price, nftAddress, tokenId }) {
             },
         });
         setIsCancelling(false);
-    };
+    }, [runContractFunction, setIsCancelling, raiseSuccess, raiseFailure]);
 
-    const purchaseItem = async () => {
+    const purchaseItem = useCallback(async () => {
         setIsPurchasing(true);
         const purchaseOptions = {
             abi: nftCharityContractAbi,
@@ -94,7 +97,7 @@ export default function CampaignCard({ price, nftAddress, tokenId }) {
             },
         });
         setIsPurchasing(false);
-    };
+    }, [runContractFunction, setIsPurchasing, raiseSuccess, raiseFailure]);
 
     useEffect(() => {
         updateUI();
@@ -106,7 +109,11 @@ export default function CampaignCard({ price, nftAddress, tokenId }) {
             <Card
                 cover={
                     imageUri ? (
-                        <img style={{ height: "250px" }} alt="example" src={imageUri} />
+                        isLoadingImg ? (
+                            <img style={{ height: "250px" }} alt="example" src={imageUri} />
+                        ) : (
+                            <Spin />
+                        )
                     ) : null
                 }
                 hoverable

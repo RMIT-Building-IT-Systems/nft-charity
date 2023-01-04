@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { Card, Image } from "antd";
+import { useState, useEffect, useCallback } from "react";
 
 import { useWeb3Contract } from "react-moralis";
 import { nftContractAbi } from "../../constants/ethereum/nftContract";
@@ -16,7 +15,7 @@ export default function CampaignCard({ nftAddress, tokenId }) {
         },
     });
 
-    const updateUI = async () => {
+    const updateUI = useCallback(async () => {
         const tokenURI = await getTokenURI();
         if (tokenURI) {
             const requestURL = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
@@ -25,7 +24,7 @@ export default function CampaignCard({ nftAddress, tokenId }) {
             const imageURIURL = imageURI.replace("ipfs://", "https://ipfs.io/ipfs/");
             setImageUri(imageURIURL);
         }
-    };
+    }, [getTokenURI, setImageUri]);
 
     useEffect(() => {
         updateUI();
@@ -35,7 +34,7 @@ export default function CampaignCard({ nftAddress, tokenId }) {
         <img
             src={imageUri}
             preview={false}
-            height={250}
+            height={300}
             style={{ border: "1px solid #f3f4f6", borderRadius: "15px" }}
         />
     );

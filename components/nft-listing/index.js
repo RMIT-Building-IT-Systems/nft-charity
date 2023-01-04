@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import styles from "../../styles/Campaigns.module.css";
 import * as ethers from "ethers";
 import { Button, Modal, Input } from "antd";
@@ -26,11 +26,12 @@ export default function NftListing() {
 
     const { isAdmin } = useAdmin();
     const { loading: _, error: __, data: listedNfts } = useQuery(GET_LISTED_NFTS);
-    const activeItems = listedNfts?.activeItems;
 
     const { raiseSuccess, raiseFailure, notificationContextHolder } = useNotification();
 
     const { runContractFunction } = useWeb3Contract();
+
+    const activeItems = useMemo(() => listedNfts?.activeItems, [listedNfts]);
 
     const approveAndList = async () => {
         setIsAddingNft(true);
@@ -70,13 +71,17 @@ export default function NftListing() {
 
         await runContractFunction({
             params: listOptions,
-            onSuccess: () => {
-                setIsAddingNft(false);
-                setOpenNFT(false);
-                raiseSuccess("NFT added successfully!");
-                setNftAddrInput("");
-                setTokenIdInput("");
-                setNftPriceInput("");
+            onSuccess: (tx) => {
+                const handleSuccess = async () => {
+                    await tx.wait(1);
+                    setIsAddingNft(false);
+                    setOpenNFT(false);
+                    raiseSuccess("NFT added successfully!");
+                    setNftAddrInput("");
+                    setTokenIdInput("");
+                    setNftPriceInput("");
+                };
+                handleSuccess();
             },
             onError: (error) => {
                 console.log(error);

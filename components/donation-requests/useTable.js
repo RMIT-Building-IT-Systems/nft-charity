@@ -114,8 +114,13 @@ export default () => {
             };
             await runContractFunction({
                 params: approveRequestOptions,
-                onSuccess: () => {
-                    raiseSuccess("Request approved successfully!");
+                onSuccess: (tx) => {
+                    const handleSuccess = async () => {
+                        tx.wait(1);
+                        raiseSuccess("Request approved successfully!");
+                        await getActiveRequests();
+                    };
+                    handleSuccess();
                 },
                 onFailure: (error) => {
                     console.log(error);
@@ -139,8 +144,14 @@ export default () => {
             };
             await runContractFunction({
                 params: approveRequestOptions,
-                onSuccess: () => {
-                    raiseSuccess("Request rejected successfully!");
+                onSuccess: (tx) => {
+                    const handleSuccess = async () => {
+                        tx.wait(1);
+                        raiseSuccess("Request rejected successfully!");
+                        await getExpiredRequests();
+                        await getRejectedRequests();
+                    };
+                    handleSuccess();
                 },
                 onFailure: (error) => {
                     console.log(error);
@@ -163,8 +174,14 @@ export default () => {
             };
             await runContractFunction({
                 params: approveRequestOptions,
-                onSuccess: () => {
-                    raiseSuccess("Request completed!");
+                onSuccess: (tx) => {
+                    const handleSuccess = async () => {
+                        tx.wait(1);
+                        raiseSuccess("Request completed successfully!");
+                        await getExpiredRequests();
+                        await getCompletedRequests();
+                    };
+                    handleSuccess();
                 },
                 onFailure: (error) => {
                     console.log(error);
