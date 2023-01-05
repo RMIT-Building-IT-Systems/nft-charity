@@ -51,14 +51,18 @@ export default function DonationRequests() {
 
         await runContractFunction({
             params: addRequestOptions,
-            onSuccess: () => {
-                setIsAddingRequest(false);
-                raiseSuccess("Request added successfully!");
-                setOpenRq(false);
-                setDescriptionInput("");
-                setAmountInput("");
-                setReceiverInput("");
-                setDayLastInput("");
+            onSuccess: (tx) => {
+                const handleSuccess = async () => {
+                    tx.wait(1);
+                    setIsAddingRequest(false);
+                    raiseSuccess("Request added successfully!");
+                    setOpenRq(false);
+                    setDescriptionInput("");
+                    setAmountInput("");
+                    setReceiverInput("");
+                    setDayLastInput("");
+                };
+                handleSuccess();
             },
             onError: (error) => {
                 console.log(error);
