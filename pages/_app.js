@@ -1,3 +1,11 @@
+/********************************************************
+*Title: Hardhat NFT Marketplace
+*Author: PatrickAlphaC
+*Date: March 16th, 2022
+*Code version: N/A
+*Availability: https://github.com/PatrickAlphaC/hardhat-nft-marketplace-fcc (Accessed 20th December 2022)
+****************************************************************/
+
 import "../styles/globals.css";
 import "../styles/app.css";
 import "../styles/home-page.css";

@@ -1,3 +1,19 @@
+/********************************************************
+*Title: Hardhat NFT Marketplace
+*Author: PatrickAlphaC
+*Date: March 16th, 2022
+*Code version: N/A
+*Availability: https://github.com/PatrickAlphaC/hardhat-nft-marketplace-fcc (Accessed 20th December 2022)
+****************************************************************/
+
+/********************************************************
+*Title: RMIT FINTECH DAPP
+*Author: vutuanlinh2k2
+*Date: August 19th, 2022
+*Code version: N/A
+*Availability: https://github.com/vutuanlinh2k2/fintech_octupus_dapp (Accessed 25th December 2022)
+****************************************************************/
+
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.7;
