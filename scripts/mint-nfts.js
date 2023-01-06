@@ -203,8 +203,14 @@ const mintNfts = async () => {
         console.log("Finish minting");
 
         const tokenId = mintTxReceipt.events[0].args.tokenId;
-        console.log("tokenId :", tokenId);
-        console.log("Approving NFT", nftAddr, "with tokenId", tokenId, "to charity contract");
+        console.log("tokenId :", ethers.utils.formatEther(tokenId) * 10 ** 18);
+        console.log(
+            "Approving NFT",
+            nftAddr,
+            "with tokenId",
+            ethers.utils.formatEther(tokenId) * 10 ** 18,
+            "to charity contract"
+        );
         const approvalTx = await nftContract.approve(nftCharityContractAddr, tokenId);
         await approvalTx.wait(1);
         console.log("Finish approving NFT");
